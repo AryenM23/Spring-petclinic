@@ -34,6 +34,15 @@ jobs:
       - name: Install Testim CLI
         run: npm install -g @testim/testim-cli
 
+      - name: Check Testim secrets
+        env:
+          TESTIM_TOKEN: ${{ secrets.TESTIM_TOKEN }}
+          TESTIM_PROJECT_ID: ${{ secrets.TESTIM_PROJECT_ID }}
+        run: |
+          echo "TESTIM_TOKEN length: $(echo $TESTIM_TOKEN | wc -c)"
+          echo "TESTIM_PROJECT_ID: $TESTIM_PROJECT_ID"
+
+
       - name: Run Testim tests
         env:
           TESTIM_TOKEN: ${{ secrets.TESTIM_TOKEN }}
