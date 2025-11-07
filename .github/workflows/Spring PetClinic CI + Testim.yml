@@ -1,0 +1,54 @@
+name: Spring PetClinic CI + Testim
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 25
+          cache: maven
+
+      - name: Build and run unit tests
+        run: mvn -B clean verify
+
+      - name: Package app
+        run: mvn package -DskipTests
+
+      - name: Run PetClinic app (background)
+        run: |
+          nohup java -jar target/*.jar > app.log 2>&1 &
+          sleep 15
+
+      - name: Install Testim CLI
+        run: npm install -g @testim/testim-cli
+
+      - name: Run Testim tests
+        env:
+          TESTIM_TOKEN: ${{ secrets.TESTIM_TOKEN }}
+          TESTIM_PROJECT_ID: ${{ secrets.TESTIM_PROJECT_ID }}
+        run: |
+          testim --token "$TESTIM_TOKEN" \
+                 --project "$TESTIM_PROJECT_ID" \
+                 --grid "Testim-Grid" \
+                 --label "regression" \
+                 --suite "Smoke Tests" \
+                 --report-file testim-report.json
+
+      - name: Upload Testim results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: testim-report
+          path: testim-report.json
