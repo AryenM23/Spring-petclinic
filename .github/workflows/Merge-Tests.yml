@@ -1,0 +1,26 @@
+name: Merge-Tests
+
+on:
+  push:
+    branches: [ master ]
+
+env:
+  # Je kunt de payload hier definiëren, nu met de correcte SHA
+  PAYLOAD: "{ \"gitHub\": { \"owner\": \"AryenM23\", \"repo\": \"Spring-petclinic\", \"sha\": \"${{ github.sha }}\" } }"
+  
+  # Vervang <suite-id> hier
+  API_URL: "https://api.reflect.run/v1/suites/addowner/executions"
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run Reflect tests
+        # Gebruik '|' voor een multi-line commando
+        run: |
+          curl -X POST \
+            -H "X-API-KEY: ${{ secrets.REFLECT_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d "$PAYLOAD" \
+            -s \
+            "$API_URL"
