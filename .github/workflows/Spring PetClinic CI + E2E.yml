@@ -11,7 +11,6 @@ jobs:
   build:
     name: Build and Package Spring PetClinic
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -23,11 +22,8 @@ jobs:
           java-version: 25
           cache: maven
 
-      - name: Build with Maven
+      - name: Build and Package with Maven
         run: mvn -B clean verify
-
-      - name: Package app
-        run: mvn package -DskipTests
 
       - name: Upload packaged app
         uses: actions/upload-artifact@v4
@@ -40,7 +36,6 @@ jobs:
     name: Run Testim E2E Tests
     needs: build
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -61,8 +56,22 @@ jobs:
         run: |
           nohup java -jar app/*.jar > app.log 2>&1 &
           echo "Waiting for app to start..."
-          sleep 30
-          curl -f http://localhost:8080 || (echo "App failed to start" && cat app.log && exit 1)
+          
+          max_attempts=30
+          attempt=0
+          # Wacht tot de app reageert op poort 8080, met een max. van 30 pogingen
+          until curl -sf http://localhost:8080; do
+            if [ $attempt -ge $max_attempts ]; then
+              echo "App failed to start after $max_attempts attempts."
+              cat app.log
+              exit 1
+            fi
+            echo "App not ready yet... (Attempt $((attempt+1))/$max_attempts). Retrying in 2s"
+            sleep 2
+            attempt=$((attempt+1))
+          done
+          
+          echo "App is up and running!"
 
       - name: Set up Node.js 22
         uses: actions/setup-node@v4
