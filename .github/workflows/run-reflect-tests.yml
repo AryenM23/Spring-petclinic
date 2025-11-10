@@ -1,0 +1,25 @@
+name: Run Reflect E2E Tests
+
+# Dit start de workflow bij elke push naar de 'main' branch
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  run-reflect-tests:
+    runs-on: ubuntu-latest # Gebruik een standaard virtuele machine
+    steps:
+      - name: Run Reflect Test
+        # Gebruik de officiële Reflect Action
+        uses: ReflectApp/run-reflect-tests-action@v1
+        with:
+          # Gebruik de secret die je net hebt ingesteld
+          api-key: ${{ secrets.REFLECT_API_KEY }}
+          
+          # Vul hier het ID van je test in
+          test-id: 303068
+          
+          # Optioneel: Wacht tot de test klaar is en geef een fout als het faalt.
+          # Dit is essentieel als je de deployment wilt stoppen bij een fout.
+          wait-for-completion: true
