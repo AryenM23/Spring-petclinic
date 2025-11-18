@@ -24,5 +24,5 @@ jobs:
         env:
           MABL_API_KEY: ${{ secrets.MABL_API_KEY }}
         with:
-          application-id: IKRZYyJdX3ycOlFRfUIDog-w # Te vinden in Mabl URL
+          application-id: HFHz0DQf3ds8SbeFUhJNmw-a # Te vinden in Mabl URL
           environment-id: vmYDf9R4f4k6GqcBtlc5bg-e # Optioneel, om specifiek op 'staging' te testen
