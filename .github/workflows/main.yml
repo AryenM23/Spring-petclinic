@@ -19,13 +19,12 @@ jobs:
           node-version: '18'
 
       # Stap 2: Installeer en run Reflect
-      - name: Run Reflect Tests
+      - name: Run Reflect Tests (Docker)
+        # We gebruiken direct de Docker image, geen installatie nodig
+        uses: docker://reflectrun/reflect-cli:latest 
         env:
           REFLECT_API_KEY: ${{ secrets.REFLECT_API_KEY }}
-        run: |
-          # 1. Installeer de juiste CLI tool (deze bestaat wel)
-          npm install -g @reflect-run/cli
-          
-          # 2. Run de specifieke suite uit je screenshot
-          # We gebruiken hier de naam "Addowner" zoals in je dashboard staat
-          reflect --apiKey $REFLECT_API_KEY --suite "Addowner"
+        with:
+          # Hier geven we de commando's mee aan de container
+          # Let op de quotes bij de suite naam "Addowner"
+          args: --apiKey ${{ secrets.REFLECT_API_KEY }} --suite "Addowner" --mobile=false
