@@ -1,0 +1,27 @@
+name: Reflect E2E Tests
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  reflect-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Stap 1: Installeer Node.js (nodig voor de Reflect CLI)
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      # Stap 2: Installeer en run Reflect
+      - name: Run Reflect Tests
+        env:
+          REFLECT_API_KEY: ${{ secrets.REFLECT_API_KEY }}
+        run: |
+          npm install -g @reflect/run-tests
+          reflect --apiKey $REFLECT_API_KEY --suite Addowner
