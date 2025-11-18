@@ -23,5 +23,5 @@ jobs:
         env:
           REFLECT_API_KEY: ${{ secrets.REFLECT_API_KEY }}
         run: |
-          npm install -g @reflect/run-tests
+          npm install -g @reflect-run/cli
           reflect --apiKey $REFLECT_API_KEY --suite Addowner
